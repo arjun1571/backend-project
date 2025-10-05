@@ -1,24 +1,38 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status-codes";
 import { userServices } from "./user.service";
-// import AppError from "../../errorHelpers/AppError";
+import { catchAsync } from "../../utils/catchAsync";
+import { sentResponse } from "../../utils/sentResponse";
 
-const createUser = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    // throw new AppError(httpStatus.BAD_REQUEST, "This is a custom error");
-    // throw new Error("This is a custom error");
+const createUser = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
     const user = await userServices.createUserService(req.body);
-
-    res.status(httpStatus.CREATED).json({
-      message: "User created successfully",
-      user,
+    sentResponse(res, {
+      statusCode: httpStatus.CREATED,
+      success: true,
+      message: "User Created Successfully",
+      data: user,
     });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    next(error);
   }
-};
+);
+
+const getAllUsers = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const result = await userServices.getAllUsers();
+
+    sentResponse(res, {
+      statusCode: httpStatus.CREATED,
+      success: true,
+      message: "All User Retrieve Successfully",
+      data: result.data,
+      meta: result.meta,
+    });
+  }
+);
 
 export const userControllers = {
   createUser,
+  getAllUsers,
 };
